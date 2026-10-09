@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }}</title>
+<style>
+  body { font-family: system-ui, "Microsoft YaHei", sans-serif; margin: 24px; color: #222; font-size: 14px; line-height: 1.5; }
+  h1 { font-size: 22px; } .meta { color: #888; font-size: 13px; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #ccc; padding: 6px 8px; vertical-align: top; text-align: left; }
+  th { background: #f3f4f6; } tr { break-inside: avoid; }
+  td img { max-width: 260px; max-height: 220px; display: block; margin-top: 4px; }
+  .anchor { font-weight: 600; font-size: 16px; } .err { color: #b42318; }
+</style>
+</head>
+<body>
+<h1>{{ title }}</h1>
+<p class="meta">共 {{ gaps|length }} 个 GAP · 生成于 {{ generated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+<table>
+  <thead><tr><th>表达</th><th>含义与用法</th><th>情景与原图</th><th>疑问 / 错误</th></tr></thead>
+  <tbody>
+  {% for g in gaps %}
+  <tr>
+    <td><div class="anchor">{{ g.anchor_text }}</div>{{ g.kind }}</td>
+    <td>{{ g.core_note }}</td>
+    <td>
+      {% for o in g.occurrences %}
+      <div>{{ o.created_at.strftime('%m-%d') }} {{ o.scene }}</div>
+      {% set img = o.image_path|data_uri %}{% if img %}<img src="{{ img }}" alt="原图">{% endif %}
+      {% endfor %}
+    </td>
+    <td>
+      {% for o in g.occurrences %}
+      {% if o.question %}<div>{{ o.question }}</div>{% endif %}
+      {% if o.error %}<div class="err">错误：{{ o.error }}</div>{% endif %}
+      {% endfor %}
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</body>
+</html>

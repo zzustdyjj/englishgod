@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f6fed">
+<title>English GAP</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div id="mock-banner" class="banner hidden">演示模式：未配置模型，AI 回复为假数据。见 README 配置 .env。</div>
+
+<main>
+  <!-- 学习：对话列表 / 对话 -->
+  <section id="tab-learn" class="tab">
+    <div id="conv-list-view">
+      <div class="toolbar"><h2>学习</h2><button id="new-conv" class="primary">＋ 新提问</button></div>
+      <ul id="conv-list" class="list"></ul>
+    </div>
+    <div id="chat-view" class="hidden">
+      <div class="toolbar">
+        <button id="chat-back" class="ghost">‹ 返回</button>
+        <span id="chat-title" class="title"></span>
+        <button id="record-btn" class="primary">记录</button>
+      </div>
+      <div id="messages"></div>
+      <form id="composer">
+        <div id="image-preview" class="hidden"><img alt=""><button type="button" id="image-clear">×</button></div>
+        <div class="row">
+          <label class="icon-btn" title="选择截图">🖼<input type="file" id="image-input" accept="image/*" hidden></label>
+          <textarea id="text-input" rows="1" placeholder="这里是什么意思？"></textarea>
+          <button type="submit" id="send-btn" class="primary">发送</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- GAP 列表 -->
+  <section id="tab-gaps" class="tab hidden">
+    <div class="toolbar"><h2>我的 GAP</h2></div>
+    <div class="filters">
+      <select id="gap-skill"><option value="">全部类别</option><option>读</option><option>听</option><option>说</option><option>写</option></select>
+      <select id="gap-status"><option value="active">未解决</option><option value="solved">已解决</option><option value="">全部</option></select>
+    </div>
+    <div id="gap-list"></div>
+  </section>
+
+  <!-- 复习 -->
+  <section id="tab-review" class="tab hidden">
+    <div class="toolbar"><h2>翻卡复习</h2><span id="review-remaining" class="muted"></span></div>
+    <div id="review-card"></div>
+  </section>
+
+  <!-- 导出 -->
+  <section id="tab-export" class="tab hidden">
+    <div class="toolbar"><h2>按模板导出</h2></div>
+    <form id="export-form" class="form">
+      <label>开始日期<input type="date" name="start"></label>
+      <label>结束日期<input type="date" name="end"></label>
+      <label>类别<select name="skill"><option value="">全部</option><option>读</option><option>听</option><option>说</option><option>写</option></select></label>
+      <label>状态<select name="status"><option value="">全部</option><option value="active">未解决</option><option value="solved">已解决</option></select></label>
+      <label>模板<select name="template" id="export-template"></select></label>
+      <button type="submit" class="primary">生成并打开</button>
+      <p class="muted">生成的页面是独立 HTML，图片已内嵌；可另存，或用浏览器打印成 PDF。</p>
+    </form>
+  </section>
+</main>
+
+<nav id="tabs">
+  <button data-tab="learn" class="active">学习</button>
+  <button data-tab="gaps">GAP</button>
+  <button data-tab="review">复习</button>
+  <button data-tab="export">导出</button>
+</nav>
+
+<div id="toast" class="hidden"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

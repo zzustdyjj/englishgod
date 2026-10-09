@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ title }}</title>
+<style>
+  body { font-family: system-ui, "Microsoft YaHei", sans-serif; max-width: 860px; margin: 24px auto; padding: 0 16px; color: #222; line-height: 1.6; }
+  h1 { font-size: 22px; } .meta { color: #888; font-size: 13px; }
+  .gap { border: 1px solid #ddd; border-radius: 8px; padding: 14px 18px; margin: 18px 0; break-inside: avoid; }
+  .anchor { font-size: 20px; font-weight: 600; }
+  .tag { display: inline-block; font-size: 12px; background: #eef; border-radius: 4px; padding: 0 6px; margin-left: 6px; }
+  .core { background: #f6f8fa; padding: 8px 12px; border-radius: 6px; margin: 8px 0; }
+  .occ { border-top: 1px dashed #ccc; padding-top: 8px; margin-top: 8px; font-size: 14px; }
+  .occ img { max-width: 100%; max-height: 360px; border: 1px solid #eee; border-radius: 4px; display: block; margin: 6px 0; }
+  .err { color: #b42318; } .label { color: #666; }
+</style>
+</head>
+<body>
+<h1>{{ title }}</h1>
+<p class="meta">共 {{ gaps|length }} 个 GAP · 生成于 {{ generated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+{% for g in gaps %}
+<div class="gap">
+  <div><span class="anchor">{{ g.anchor_text }}</span>
+    {% if g.kind %}<span class="tag">{{ g.kind }}</span>{% endif %}
+    {% for s in g.skills %}<span class="tag">{{ s }}</span>{% endfor %}
+    {% if g.status == 'solved' %}<span class="tag">已解决</span>{% endif %}
+  </div>
+  <div class="core">{{ g.core_note }}</div>
+  {% for o in g.occurrences %}
+  <div class="occ">
+    <div><span class="label">遇见 {{ loop.index }}（{{ o.created_at.strftime('%Y-%m-%d') }}）情景：</span>{{ o.scene }}</div>
+    {% set img = o.image_path|data_uri %}{% if img %}<img src="{{ img }}" alt="原图">{% endif %}
+    {% if o.question %}<div><span class="label">疑问：</span>{{ o.question }}</div>{% endif %}
+    {% if o.user_attempt %}<div><span class="label">我的原话：</span>{{ o.user_attempt }}</div>{% endif %}
+    {% if o.error %}<div class="err"><span class="label">错误：</span>{{ o.error }}</div>{% endif %}
+    {% if o.clarified %}<div><span class="label">弄清楚了：</span>{{ o.clarified }}</div>{% endif %}
+    <div class="label">程度：{{ o.evidence }}</div>
+  </div>
+  {% endfor %}
+</div>
+{% endfor %}
+</body>
+</html>
