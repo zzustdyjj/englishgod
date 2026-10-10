@@ -14,3 +14,6 @@ DB_PATH = DATA_DIR / "app.db"
 LLM_MODEL = os.getenv("LLM_MODEL") or "mock"
 LLM_API_KEY = os.getenv("LLM_API_KEY") or None
 LLM_API_BASE = os.getenv("LLM_API_BASE") or None
+
+# 访问密码；为空则不需要登录（仅限本机使用）。通过公网地址访问时必须设置
+ACCESS_PASSWORD = os.getenv("ACCESS_PASSWORD") or None

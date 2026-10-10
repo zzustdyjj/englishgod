@@ -21,6 +21,8 @@ copy .env.example .env          # 然后编辑 .env，配置模型
 
 **手机访问**：手机和电脑连同一个 WiFi，打开 `http://<电脑的局域网 IP>:8000`（在 PowerShell 运行 `ipconfig` 查看 IPv4 地址）。第一次启动时，Windows 防火墙会询问是否允许 Python 访问网络，选择允许“专用网络”。
 
+**手机不在同一网络时（公网访问）**：在 `.env` 里设置 `ACCESS_PASSWORD`，然后双击 `tunnel.bat`。它会启动服务，并用 [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/trycloudflare/) 生成一个 `https://xxx.trycloudflare.com` 网址，手机在任何网络下打开它、输入密码即可。需要先安装 cloudflared（`winget install Cloudflare.cloudflared`）。每次启动网址都会变化；关闭窗口即停止公网访问。
+
 ## 配置模型
 
 编辑 `.env`。模型名使用 [LiteLLM](https://docs.litellm.ai/docs/providers) 格式 `<厂商>/<模型>`，**模型必须支持看图**。

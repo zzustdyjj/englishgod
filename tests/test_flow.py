@@ -75,6 +75,23 @@ def test_same_anchor_merges_and_reactivates():
     assert len(gap["occurrences"]) == 2
 
 
+def test_access_password(monkeypatch):
+    from app import config
+
+    monkeypatch.setattr(config, "ACCESS_PASSWORD", "secret-pass")
+    c = TestClient(app)
+    assert c.get("/api/gaps").status_code == 401
+    assert c.get("/", follow_redirects=False).headers["location"] == "/login"
+    assert c.get("/static/app.js").status_code == 200
+
+    r = c.post("/login", data={"password": "wrong"}, follow_redirects=False)
+    assert "error" in r.headers["location"]
+    assert c.get("/api/gaps").status_code == 401
+
+    c.post("/login", data={"password": "secret-pass"}, follow_redirects=False)
+    assert c.get("/api/gaps").status_code == 200
+
+
 def test_rejects_empty_message():
     cid = new_conv()
     assert ask(cid, "  ").status_code == 400

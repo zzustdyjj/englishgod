@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>English GAP</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<main>
+  <form method="post" action="/login" class="form card" style="margin-top:20vh">
+    <h2>English GAP</h2>
+    <input type="password" name="password" placeholder="访问密码" autofocus required
+           style="border:1px solid var(--border);border-radius:8px;padding:10px;background:var(--card)">
+    <p id="error" class="err hidden">密码不对，请重试。</p>
+    <button type="submit" class="primary">进入</button>
+  </form>
+</main>
+<script>
+  if (new URLSearchParams(location.search).has("error")) document.getElementById("error").classList.remove("hidden");
+</script>
+</body>
+</html>

@@ -1,9 +1,12 @@
+import asyncio
+import hashlib
+import hmac
 import uuid
 from datetime import date, datetime, timedelta
 from typing import Literal
 
-from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -20,6 +23,52 @@ init_db()
 app = FastAPI(title="Personal English Agent")
 app.mount("/static", StaticFiles(directory=config.BASE_DIR / "static"), name="static")
 app.mount("/uploads", StaticFiles(directory=config.UPLOAD_DIR), name="uploads")
+
+
+# ---------- 访问密码 ----------
+
+AUTH_COOKIE = "access"
+LOGIN_PAGE = config.BASE_DIR / "static" / "login.html"
+
+
+def _auth_token() -> str:
+    # 由密码派生；修改密码后旧的登录状态自动失效
+    return hmac.new(config.ACCESS_PASSWORD.encode(), b"english-gap-access", hashlib.sha256).hexdigest()
+
+
+@app.middleware("http")
+async def require_password(request: Request, call_next):
+    path = request.url.path
+    if config.ACCESS_PASSWORD and path != "/login" and not path.startswith("/static/"):
+        if not hmac.compare_digest(request.cookies.get(AUTH_COOKIE, ""), _auth_token()):
+            if path.startswith("/api/"):
+                return JSONResponse({"detail": "请先登录"}, status_code=401)
+            return RedirectResponse("/login", status_code=303)
+    return await call_next(request)
+
+
+@app.get("/login")
+def login_page():
+    return FileResponse(LOGIN_PAGE)
+
+
+@app.post("/login")
+async def login(request: Request, password: str = Form("")):
+    if not config.ACCESS_PASSWORD:
+        return RedirectResponse("/", status_code=303)
+    if not hmac.compare_digest(password.encode(), config.ACCESS_PASSWORD.encode()):
+        await asyncio.sleep(1)  # 拖慢暴力猜密码
+        return RedirectResponse("/login?error=1", status_code=303)
+    resp = RedirectResponse("/", status_code=303)
+    resp.set_cookie(
+        AUTH_COOKIE,
+        _auth_token(),
+        max_age=30 * 24 * 3600,
+        httponly=True,
+        samesite="lax",
+        secure=request.headers.get("x-forwarded-proto") == "https",
+    )
+    return resp
 
 
 @app.get("/")

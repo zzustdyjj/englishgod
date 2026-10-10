@@ -19,6 +19,10 @@ function h(tag, attrs = {}, ...children) {
 
 async function api(path, options = {}) {
   const res = await fetch(path, options);
+  if (res.status === 401) {
+    location.href = "/login";
+    throw new Error("请先登录");
+  }
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.detail || `请求失败（${res.status}）`);
   return data;
